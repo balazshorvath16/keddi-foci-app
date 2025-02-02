@@ -1,19 +1,26 @@
 // src/pages/Dashboard.jsx
 import React, { useEffect, useState } from "react";
-import { auth } from "../firebaseConfig";
+import { auth, db } from "../firebaseConfig";
 import { signOut, onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
+        const userDocRef = doc(db, "users", currentUser.uid);
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          setUserRole(data.role);
+        }
       } else {
-        // Ha nincs bejelentkezve, visszairányítjuk a Home oldalra
         navigate("/");
       }
     });
@@ -32,13 +39,14 @@ function Dashboard() {
   return (
     <div>
       <h2>Dashboard</h2>
-      {user && <p>Üdvözlünk, {user.email}!</p>}
-      <button onClick={handleLogout}>Kijelentkezés</button>
+      {user && <p>Üdvözlünk, {user.email}! ({userRole})</p>}
       <div>
-        <h3>Események</h3>
-        {/* Itt majd megjelenik az események listája és a részletek */}
-        <p>Itt jelennek meg az események.</p>
+        <button onClick={() => navigate("/events")}>Események megtekintése</button>
+        {userRole === "admin" && (
+          <button onClick={() => navigate("/create-event")}>Esemény létrehozása</button>
+        )}
       </div>
+      <button onClick={handleLogout}>Kijelentkezés</button>
     </div>
   );
 }

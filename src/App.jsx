@@ -5,17 +5,19 @@ import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import CreateEvent from "./pages/CreateEvent";
+import Events from "./pages/Events";
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Home: bejelentkezés és regisztráció landing oldal */}
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        {/* Dashboard: belépett felhasználók számára, ahol az események látszanak */}
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/create-event" element={<CreateEvent />} />
+        <Route path="/events" element={<Events />} />
       </Routes>
     </Router>
   );

@@ -3,10 +3,11 @@ import React, { useState, useEffect } from "react";
 import { auth, db } from "../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { Container, Form, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
 function Profile() {
-  const [userData, setUserData] = useState({ fullName: "", birthDate: "", profilePic: "" });
+  const [userData, setUserData] = useState({ fullName: "", birthDate: "" });
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
@@ -32,9 +33,9 @@ function Profile() {
     const user = auth.currentUser;
     if (!user) return;
 
-    // Csak a módosítható mezők frissítése
     const updateData = {
       fullName: userData.fullName,
+      birthDate: userData.birthDate,
     };
 
     try {
@@ -47,26 +48,41 @@ function Profile() {
   };
 
   return (
-    <div>
+    <Container className="mt-4">
       <h2>Profil módosítása</h2>
-      <form onSubmit={handleUpdate}>
-        <div>
-          <label>Email: </label>
-          <span>{email}</span>
-        </div>
-        <div>
-          <label>Teljes név:</label>
-          <input
+      <Form onSubmit={handleUpdate}>
+        <Form.Group className="mb-3">
+          <Form.Label>Email:</Form.Label>
+          <Form.Control plaintext readOnly defaultValue={email} />
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Teljes név:</Form.Label>
+          <Form.Control
             type="text"
             value={userData.fullName}
-            onChange={(e) => setUserData({ ...userData, fullName: e.target.value })}
+            onChange={(e) =>
+              setUserData({ ...userData, fullName: e.target.value })
+            }
             required
           />
-        </div>
-        <button type="submit">Profil frissítése</button>
-      </form>
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Születési dátum:</Form.Label>
+          <Form.Control
+            type="date"
+            value={userData.birthDate}
+            onChange={(e) =>
+              setUserData({ ...userData, birthDate: e.target.value })
+            }
+            required
+          />
+        </Form.Group>
+        <Button variant="primary" type="submit">
+          Profil frissítése
+        </Button>
+      </Form>
       {message && <p>{message}</p>}
-    </div>
+    </Container>
   );
 }
 

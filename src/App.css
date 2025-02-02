@@ -1,5 +1,6 @@
 @import './assets/css/template.css';
 
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -41,4 +42,8 @@
 
 .read-the-docs {
   color: #888;
+}
+.container-custom {
+  max-width: 100% !important; /* Teljes szélesség */
+  padding: 0 20px; /* Változtathatod a belső margót igény szerint */
 }

@@ -1,7 +1,17 @@
 // src/pages/Events.jsx
 import React, { useEffect, useState } from "react";
 import { db, auth } from "../firebaseConfig";
-import { collection, query, orderBy, onSnapshot, updateDoc, doc, arrayUnion, arrayRemove, runTransaction } from "firebase/firestore";
+import {
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+  updateDoc,
+  doc,
+  arrayUnion,
+  arrayRemove,
+  runTransaction
+} from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 
@@ -12,25 +22,7 @@ function Events() {
   const [usersMap, setUsersMap] = useState({});
   const [expandedEvents, setExpandedEvents] = useState({});
   const navigate = useNavigate();
-  const styles = {
-    card: {
-      border: "1px solid #ccc",
-      borderRadius: "8px",
-      margin: "10px",
-      padding: "10px",
-      boxShadow: "0 2px 5px rgba(0,0,0,0.1)"
-    },
-    button: {
-      margin: "5px 0",
-      padding: "8px 12px",
-      backgroundColor: "#007bff",
-      color: "#fff",
-      border: "none",
-      borderRadius: "4px",
-      cursor: "pointer"
-    }
-  };
-  // Beállítjuk a bejelentkezett felhasználót
+
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -42,22 +34,23 @@ function Events() {
     return () => unsubscribeAuth();
   }, [navigate]);
 
-  // Lekérjük az eseményeket
   useEffect(() => {
     const q = query(collection(db, "events"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const eventsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const eventsData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
       setEvents(eventsData);
       setLoading(false);
     });
     return () => unsubscribe();
   }, []);
 
-  // Lekérjük a felhasználókat és felépítjük az uid->fullName mapping-et
   useEffect(() => {
     const unsubscribeUsers = onSnapshot(collection(db, "users"), (snapshot) => {
       const usersObj = {};
-      snapshot.docs.forEach(doc => {
+      snapshot.docs.forEach((doc) => {
         const data = doc.data();
         usersObj[doc.id] = data.fullName;
       });
@@ -66,18 +59,15 @@ function Events() {
     return () => unsubscribeUsers();
   }, []);
 
-  // Jelentkezés eseményre
   const joinEvent = async (event) => {
     if (!currentUser) return;
     const eventRef = doc(db, "events", event.id);
     try {
       if (event.participants.length < event.maxCapacity) {
-        // Felhasználó hozzáadása a résztvevők listájához
         await updateDoc(eventRef, {
           participants: arrayUnion(currentUser.uid)
         });
       } else {
-        // Ha telítve van, hozzáadjuk a várólistához
         await updateDoc(eventRef, {
           waitlist: arrayUnion(currentUser.uid)
         });
@@ -87,7 +77,6 @@ function Events() {
     }
   };
 
-  // Lemondás eseményről, tranzakcióval: ha a felhasználó résztvevő, a várólista első tagját automatikusan áthelyezzük
   const cancelParticipation = async (event) => {
     if (!currentUser) return;
     const eventRef = doc(db, "events", event.id);
@@ -95,18 +84,20 @@ function Events() {
       await runTransaction(db, async (transaction) => {
         const eventDoc = await transaction.get(eventRef);
         if (!eventDoc.exists()) throw "Az esemény nem található!";
-        
         const eventData = eventDoc.data();
-        // Eltávolítjuk a felhasználót a résztvevőkből és a várólistából
-        let updatedParticipants = eventData.participants.filter(uid => uid !== currentUser.uid);
-        let updatedWaitlist = eventData.waitlist ? eventData.waitlist.filter(uid => uid !== currentUser.uid) : [];
-
-        // Ha a felhasználó résztvevő volt és van várólista, az első várólista tagot áthelyezzük a résztvevők közé
-        if (eventData.participants.includes(currentUser.uid) && updatedWaitlist.length > 0) {
+        let updatedParticipants = eventData.participants.filter(
+          (uid) => uid !== currentUser.uid
+        );
+        let updatedWaitlist = eventData.waitlist
+          ? eventData.waitlist.filter((uid) => uid !== currentUser.uid)
+          : [];
+        if (
+          eventData.participants.includes(currentUser.uid) &&
+          updatedWaitlist.length > 0
+        ) {
           const promotedUser = updatedWaitlist.shift();
           updatedParticipants.push(promotedUser);
         }
-
         transaction.update(eventRef, {
           participants: updatedParticipants,
           waitlist: updatedWaitlist
@@ -124,34 +115,66 @@ function Events() {
   return (
     <div>
       <h2>Események</h2>
-      <button onClick={() => navigate("/dashboard")}>Vissza a Dashboardra</button>
+      <button onClick={() => navigate("/dashboard")}>
+        Vissza a Dashboardra
+      </button>
       <ul>
         {events.map((event) => {
           const isParticipant = event.participants.includes(currentUser?.uid);
-          const isInWaitlist = event.waitlist && event.waitlist.includes(currentUser?.uid);
+          const isInWaitlist =
+            event.waitlist && event.waitlist.includes(currentUser?.uid);
           return (
-            <li key={event.id} style={styles.card}>
-              <p><strong>Helyszín:</strong> {event.location}</p>
-              <p><strong>Dátum:</strong> {event.eventDate}</p>
-              <p><strong>Idő:</strong> {event.eventTime}</p>
-              <p><strong>Max létszám:</strong> {event.maxCapacity}</p>
-              <p><strong>Résztvevők száma:</strong> {event.participants.length}</p>
+            <li
+              key={event.id}
+              style={{
+                border: "1px solid #ccc",
+                margin: "10px",
+                padding: "10px"
+              }}
+            >
+              <p>
+                <strong>Helyszín:</strong> {event.location}
+              </p>
+              <p>
+                <strong>Dátum:</strong> {event.eventDate}
+              </p>
+              <p>
+                <strong>Idő:</strong> {event.eventTime}
+              </p>
+              <p>
+                <strong>Max létszám:</strong> {event.maxCapacity}
+              </p>
+              <p>
+                <strong>Résztvevők száma:</strong> {event.participants.length}
+              </p>
               {isParticipant || isInWaitlist ? (
-                <button onClick={() => cancelParticipation(event)}>Lemondom</button>
+                <button onClick={() => cancelParticipation(event)}>
+                  Lemondom
+                </button>
               ) : (
                 <button onClick={() => joinEvent(event)}>
-                  {event.participants.length < event.maxCapacity ? "Jelentkezem" : "Jelentkezem várólistára"}
+                  {event.participants.length < event.maxCapacity
+                    ? "Jelentkezem"
+                    : "Jelentkezem várólistára"}
                 </button>
               )}
-              {/* Dropdown a résztvevők és várólista részletezésére */}
-              <button onClick={() => setExpandedEvents(prev => ({...prev, [event.id]: !prev[event.id]}))}>
-                {expandedEvents[event.id] ? "Elrejt" : "Résztvevők megtekintése"}
+              <button
+                onClick={() =>
+                  setExpandedEvents((prev) => ({
+                    ...prev,
+                    [event.id]: !prev[event.id]
+                  }))
+                }
+              >
+                {expandedEvents[event.id]
+                  ? "Elrejt"
+                  : "Résztvevők megtekintése"}
               </button>
               {expandedEvents[event.id] && (
                 <div>
                   <h4>Résztvevők:</h4>
                   <ul>
-                    {event.participants.map(uid => (
+                    {event.participants.map((uid) => (
                       <li key={uid}>{usersMap[uid] || uid}</li>
                     ))}
                   </ul>
@@ -159,7 +182,7 @@ function Events() {
                     <>
                       <h4>Várólista:</h4>
                       <ul>
-                        {event.waitlist.map(uid => (
+                        {event.waitlist.map((uid) => (
                           <li key={uid}>{usersMap[uid] || uid}</li>
                         ))}
                       </ul>

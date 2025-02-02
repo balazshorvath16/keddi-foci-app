@@ -4,6 +4,7 @@ import { db, auth } from "../firebaseConfig";
 import { collection, query, orderBy, onSnapshot, updateDoc, doc, arrayUnion, arrayRemove } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
+import { runTransaction } from "firebase/firestore";
 
 function Events() {
   const [events, setEvents] = useState([]);
@@ -56,21 +57,31 @@ function Events() {
   };
 
   // Lemondás eseményről (résztvevő vagy várólista törlése)
-  const cancelParticipation = async (event) => {
+const cancelParticipation = async (event) => {
     if (!currentUser) return;
     const eventRef = doc(db, "events", event.id);
     try {
-      if (event.participants.includes(currentUser.uid)) {
-        await updateDoc(eventRef, {
-          participants: arrayRemove(currentUser.uid)
+      await runTransaction(db, async (transaction) => {
+        const eventDoc = await transaction.get(eventRef);
+        if (!eventDoc.exists()) throw "Az esemény nem található!";
+        
+        const eventData = eventDoc.data();
+        // Töröljük a jelenlegi felhasználót a résztvevők és várólista tömbből
+        let updatedParticipants = eventData.participants.filter(uid => uid !== currentUser.uid);
+        let updatedWaitlist = eventData.waitlist ? eventData.waitlist.filter(uid => uid !== currentUser.uid) : [];
+  
+        // Ha a felhasználó résztvevő volt, és van várólistán tag,
+        // az első várólista tagot áthelyezzük a résztvevők közé
+        if (eventData.participants.includes(currentUser.uid) && updatedWaitlist.length > 0) {
+          const promotedUser = updatedWaitlist.shift();
+          updatedParticipants.push(promotedUser);
+        }
+  
+        transaction.update(eventRef, {
+          participants: updatedParticipants,
+          waitlist: updatedWaitlist
         });
-        // Itt később bevezethetünk logikát, hogy a várólista első tagját áthelyezzük a résztvevők közé
-      }
-      if (event.waitlist && event.waitlist.includes(currentUser.uid)) {
-        await updateDoc(eventRef, {
-          waitlist: arrayRemove(currentUser.uid)
-        });
-      }
+      });
     } catch (err) {
       console.error("Hiba a leiratkozás során:", err);
     }
@@ -109,5 +120,11 @@ function Events() {
     </div>
   );
 }
+
+// Az importok között add hozzá:
+
+
+
+
 
 export default Events;

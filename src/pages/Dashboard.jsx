@@ -40,12 +40,12 @@ function Dashboard() {
     <div>
       <h2>Dashboard</h2>
       {user && <p>Üdvözlünk, {user.email}! ({userRole})</p>}
-      <div>
-        <button onClick={() => navigate("/events")}>Események megtekintése</button>
-        {userRole === "admin" && (
-          <button onClick={() => navigate("/create-event")}>Esemény létrehozása</button>
-        )}
-      </div>
+      <button onClick={() => navigate("/events")}>Események megtekintése</button>
+      {userRole === "admin" && (
+        <button onClick={() => navigate("/create-event")}>
+          Esemény létrehozása
+        </button>
+      )}
       <button onClick={handleLogout}>Kijelentkezés</button>
     </div>
   );

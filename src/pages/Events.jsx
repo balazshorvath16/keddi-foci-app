@@ -12,7 +12,24 @@ function Events() {
   const [usersMap, setUsersMap] = useState({});
   const [expandedEvents, setExpandedEvents] = useState({});
   const navigate = useNavigate();
-
+  const styles = {
+    card: {
+      border: "1px solid #ccc",
+      borderRadius: "8px",
+      margin: "10px",
+      padding: "10px",
+      boxShadow: "0 2px 5px rgba(0,0,0,0.1)"
+    },
+    button: {
+      margin: "5px 0",
+      padding: "8px 12px",
+      backgroundColor: "#007bff",
+      color: "#fff",
+      border: "none",
+      borderRadius: "4px",
+      cursor: "pointer"
+    }
+  };
   // Beállítjuk a bejelentkezett felhasználót
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
@@ -113,7 +130,7 @@ function Events() {
           const isParticipant = event.participants.includes(currentUser?.uid);
           const isInWaitlist = event.waitlist && event.waitlist.includes(currentUser?.uid);
           return (
-            <li key={event.id} style={{ border: "1px solid #ccc", margin: "10px", padding: "10px" }}>
+            <li key={event.id} style={styles.card}>
               <p><strong>Helyszín:</strong> {event.location}</p>
               <p><strong>Dátum:</strong> {event.eventDate}</p>
               <p><strong>Idő:</strong> {event.eventTime}</p>

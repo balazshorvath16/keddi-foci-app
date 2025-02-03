@@ -194,6 +194,18 @@ button {
 }
 
 
+
+@media (max-width: 768px){
+
+ .home_flex_container {
+  flex-direction: column-reverse;
+ }
+ .home_flex_container div {
+  width: 100%;
+ }
+}
+
+
 @media (max-width: 640px){
 
   .main_container {

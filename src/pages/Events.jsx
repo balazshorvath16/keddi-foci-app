@@ -185,22 +185,25 @@ function Events() {
     slidesToScroll: 1,
     responsive: [
       {
-        breakpoint: 1024,
-        settings: { slidesToShow: 2 }
-      },
-      {
-        breakpoint: 600,
-        settings: { slidesToShow: 1 }
+        breakpoint: 1280,
+        settings: { 
+          slidesToShow: 1,
+          variableWidth: true,
+        },
+       
       }
     ]
   };
 
   if (loading) {
-    return <div>Töltés...</div>;
+    return <div>
+      <img src="src/assets/img/VAR_System_Logo.svg" alt="" style={{ maxWidth: "120px", height: "auto" }}/>
+      <h2>Egy pillanat, a VAR még vizsgálja az esetet...</h2>
+      </div>;
   }
 
   return (
-    <div>
+    <div id="event_page" className="main_container">
       <h2>Események</h2>
       <button onClick={() => navigate("/dashboard")}>
         Vissza a Dashboardra

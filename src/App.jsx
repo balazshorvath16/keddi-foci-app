@@ -14,6 +14,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import EditEvent from "./pages/EditEvent";
 import UserManagement from "./pages/UserManagement";
+import Layout from "./components/Layout";
 
 
 function App() {
@@ -23,13 +24,15 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/create-event" element={<CreateEvent />} />
-        <Route path="/events" element={<Events />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/statistics" element={<Statistics />} />
-        <Route path="/edit-event/:id" element={<EditEvent />} />
-        <Route path="/user-management" element={<UserManagement />} />
+        <Route element={<Layout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/create-event" element={<CreateEvent />} />
+          <Route path="/events" element={<Events />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/statistics" element={<Statistics />} />
+          <Route path="/edit-event/:id" element={<EditEvent />} />
+          <Route path="/user-management" element={<UserManagement />} />
+        </Route>
       </Routes>
     </Router>
   );

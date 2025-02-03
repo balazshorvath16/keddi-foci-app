@@ -24,7 +24,7 @@ function Statistics() {
   return (
     <div className="main_container">
       <h2>Statisztikák</h2>
-      <table border="1" cellPadding="5" cellSpacing="0">
+      <table className="statistics_table" border="1" cellPadding="5" cellSpacing="0">
         <thead>
           <tr>
             <th>Név</th>

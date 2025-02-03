@@ -32,7 +32,9 @@ function Register() {
         email: user.email,
         fullName: fullName,
         birthDate: birthDate,
-        role: "user"
+        role: "user",
+        participationCount: 0,
+        level: "Új játékos"
       });
       navigate("/dashboard");
     } catch (err) {

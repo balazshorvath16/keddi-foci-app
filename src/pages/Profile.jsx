@@ -49,6 +49,7 @@ function Profile() {
   return (
     <div className="main_container">
       <h2>Profil módosítása</h2>
+      <p>Szint: {userData.level} ({userData.participationCount}/10)</p>
       <form onSubmit={handleUpdate}>
         <div>
           <label>Email: </label>

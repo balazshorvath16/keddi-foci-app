@@ -1,50 +1,72 @@
 # Keddi Foci App
 
-**Keddi Foci App** egy mobilbarát webalkalmazás, amely célja, hogy egyetlen felületen összegyűjtse a focis csapattagok eseményeit. Az alkalmazás lehetővé teszi a felhasználók számára, hogy regisztráljanak, bejelentkezzenek, jelentkezzenek az eseményekre, és adminisztrátori funkciók segítségével az eseményeket kezeljék. A jövőben push értesítések integrálása is tervezett (Blaze csomagra való előfizetés esetén).
+Üdvözöllek a Keddi Foci App-ban!  
+Ez az alkalmazás segít a játékosok számára könnyedén szervezni a közös játékokat, valamint nyomon követni a részvételi adatokat. Az app célja, hogy mindenki gyorsan, egyszerűen és átláthatóan tudjon jelentkezni az eseményekre, miközben a rendszer automatikusan kezeli a várólistákat és a prioritásokat.
 
-## Tartalomjegyzék
+---
 
-- [Funkciók](#funkciók)
-- [Technológiák](#technológiák)
-- [Telepítés és futtatás](#telepítés-és-futtatás)
-- [Verziókövetés és fejlesztési folyamat](#verziókövetés-és-fejlesztési-folyamat)
-- [Felhasználói Szintek](#felhasználói-szintek)
-- [Adminisztrációs funkciók](#adminisztrációs-funkciók)
-- [Események kezelése](#események-kezelése)
-- [Jövőbeni fejlesztések](#jövőbeni-fejlesztések)
-- [Kapcsolat](#kapcsolat)
+## Fő Funkciók
 
-## Funkciók
+### Regisztráció és Bejelentkezés  
+- **Regisztráció:** Új felhasználóként add meg az email címed, teljes neved, születési dátumod, valamint a jelszavadat!  
+- **Bejelentkezés:** Ha már regisztráltál, egyszerűen jelentkezz be, hogy elérd az app összes funkcióját.
 
-- **Felhasználói regisztráció és bejelentkezés:**  
-  Új felhasználók regisztrációja során megadják az email címet, teljes nevet, születési dátumot, jelszót és jelszó megerősítést. A bejelentkezés után a Dashboard felületre kerülnek.
+### Dashboard  
+- **Áttekintő oldal:** Miután bejelentkeztél, a Dashboard-on láthatod a közelgő focieseményeket és a saját profilodat.
+- **Felhasználói Szintek:** Az app nyomon követi, hogy hány alkalmon vettél részt (pl. 3/10). Ha elérsz 10 részvételt, automatikusan "Keddi foci veterán" leszel – ez előnyt jelent a jelentkezésnél.
+- **Felhasználói Szintek:** Minden újonnan érkező "Új játékos" szintet kap.
 
-- **Dashboard:**  
-  A Dashboard felület tartalmazza az események megtekintését, a profil módosítását, valamint az adminisztrátorok számára elérhető esemény létrehozás és szerkesztés funkciókat.
+### Események  
+- **Eseménylista:** Az események áttekinthető módon, például egy görgethető galériában jelennek meg. Minden eseményhez látható a helyszín, dátum, időpont és a maximális létszám.
+- **Jelentkezés:** Ha az esemény még nem telt meg, könnyedén jelentkezhetsz rá. Ha megtelt, a rendszer várólistára helyez téged.  
+- **Veterán Prioritás:** Ha "Keddi foci veterán" vagy, bizonyos esetekben automatikusan előnyt élvezhetsz – például egy veterán jelentkezésekor a rendszer átrendezi a résztvevőket. (ha 36 órával az esemény kezdete előtt jelentkezel, aztuán nem élvez senki előnyöket)
 
-- **Események listázása:**  
-  Az eseményeket egy Slick Carousel segítségével jeleníti meg, így nagyobb mennyiségű esemény is áttekinthető marad. Az eseménykártyák tartalmazzák a helyszínt, dátumot, időpontot, maximális létszámot, résztvevők számát, és a résztvevők részletes listáját (dropdown formában).
+### Profil  
+- **Személyes adatok módosítása:** A Profil oldalon megtekintheted és módosíthatod a személyes adataidat.
+- **Részvételi adatok:** Látod, hogy jelenleg hány eseményen vettél részt, és mely szinten állsz (pl. "Új játékos" vagy "Keddi foci veterán").
 
-- **Jelentkezési logika és várólista:**  
-  - Amennyiben az esemény megtelt, a felhasználók várólistára kerülnek.
-  - Ha egy résztvevő lemondja, a rendszer automatikusan áthelyezi a várólista első tagját a résztvevők közé.
+### Adminisztráció  
+- **Események kezelése:** Adminisztrátorként létrehozhatod, szerkesztheted az eseményeket (pl. helyszín, dátum, idő és létszám módosítása), és jelezheted, ha egy esemény elmarad.
+- **Felhasználók kezelése:** Az admin felületen manuálisan is módosíthatod a felhasználók részvételi adatait és szintjét.
 
-- **Felhasználói szintek:**  
-  Minden regisztrált felhasználó rendelkezik egy "szinttel" és egy "részvételi számmal" (például `3/10`), ami azt jelzi, hogy hány alkalommal vettek részt az eseményeken. Alapértelmezés szerint az új felhasználók "Új játékos" szinten vannak. Ha egy felhasználó eléri a 10 esemény részvételt, automatikusan "Keddi foci veterán" szintre kerül. A veterán felhasználóknak speciális regisztrációs logikájuk van, mely szerint, ha a regisztrációs határidő előtt jelentkeznek, prioritást élveznek, és akár át is tudják váltani az új játékosokat a résztvevők listájából.
+---
 
-- **Adminisztráció:**  
-  Az adminoknak elérhető felületük van a felhasználók kezelésére, ahol manuálisan is módosítható a felhasználók szintje és részvételi száma. Emellett adminként eseményeket hozhatnak létre, szerkeszthetnek (pl. helyszín, időpont, létszám módosítása) és jelezhetik, ha egy esemény elmaradt (a kártya kiszürkül és egy "ELMARAD" badge jelenik meg).
+## Hogyan Használhatod az App-et?
 
-## Technológiák
+1. **App "telepítése"**
+   - Ha mobiltelefonon keresztül megnyitod a weboldalt valamelyik böngészőben (egységesen igaz mind Androidra, mind iOS rendszerer), rá kell nyomni a megosztás gombra (böngészőtől függ, hol található), lejjebb görgetve a listában ezután ki kell választani azt, hogy "Hozzáadás a kezdőképernyőhöz". Ezután már meg fog jelenni a kezdő képernyőn az applikáció ikonja, és innentől kezdve nem kell többször külön felkeresni a weboldalt.
 
-- **Frontend:** React, React Router  
-- **Stílusok:** Alap HTML/CSS (bootstrap nélküli verzió), Slick Carousel (események listázása)  
-- **Backend:** Firebase (Authentication, Firestore, Storage a push értesítésekhez jövőben)  
-- **Egyéb csomagok:** react-slick, slick-carousel
+2. **Regisztráció és Bejelentkezés:**  
+   - Regisztrálj az alkalmazásban a megadott űrlap kitöltésével. (lehetőleg valós email címet adjatok meg)
+   - Jelentkezz be a bejelentkezési felületen.
 
-## Telepítés és futtatás
+3. **Dashboard:**  
+   - Miután beléptél, a Dashboard-on áttekintheted a közelgő eseményeket.
+   - Itt láthatod a saját profilodat, a részvételed számát, és a jelenlegi szintedet.
 
-1. **Klónozd a repót:**
-   ```bash
-   git clone https://github.com/<felhasználónév>/keddi-foci-app.git
-   cd keddi-foci-app
+4. **Események:**  
+   - Böngészd az eseményeket a galéria stílusú nézetben!
+   - Kattints a "Jelentkezem" gombra, ha szeretnél részt venni. Ha az esemény megtelt, a rendszer várólistára helyez.
+   - Veteránként speciális prioritást élvezhetsz a jelentkezés során.
+
+5. **Profil Módosítása:**  
+   - Szerkeszd a profilodat, módosítsd a személyes adataidat, és kövesd nyomon a részvételeidet.
+
+6. **Admin Felület (Adminoknak):**  
+   - Az adminok számára elérhető az események létrehozása és szerkesztése, valamint a felhasználók kezelésének lehetősége.
+
+---
+
+## Miért Érdemes Használni a Keddi Foci App-et?
+
+- **Egyszerűség:** Intuitív és könnyen kezelhető felület.
+- **Átláthatóság:** Minden esemény és részvételi adat egy helyen elérhető.
+- **Prioritás:** A veterán játékosok előnyt élvezhetnek a jelentkezés során.
+- **Közösségi Élmény:** Segít az események gördülékeny szervezésében.
+
+---
+
+## További Információk
+
+Ha bármilyen kérdésed van az alkalmazással kapcsolatban, vagy segítségre van szükséged, keress bátran.
+

@@ -11,14 +11,24 @@ import {
   arrayUnion,
   arrayRemove,
   runTransaction,
-  getDoc
+  getDoc,
+  increment
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
-
+function computeRegistrationDeadline(event) {
+  // Feltételezzük, hogy event.eventDate egy "YYYY-MM-DD" formátumú string,
+  // és event.eventTime egy "HH:MM" formátumú string (24 órás formátum).
+  // Összeállítjuk az esemény kezdési dátum- és időpontját egy ISO formátumú string-gé:
+  const eventDateTimeStr = `${event.eventDate}T${event.eventTime}:00`;
+  const eventStart = new Date(eventDateTimeStr);
+  // 36 óra milliszekundumban: 36 * 60 * 60 * 1000 = 129600000
+  const deadline = new Date(eventStart.getTime() - 129600000);
+  return deadline;
+}
 function Events() {
   const [events, setEvents] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
@@ -70,23 +80,71 @@ function Events() {
     return () => unsubscribeUsers();
   }, []);
 
+
   const joinEvent = async (event) => {
     if (!currentUser) return;
     const eventRef = doc(db, "events", event.id);
+    const now = new Date();
+    const deadline = computeRegistrationDeadline(event); // Ezt implementáld a kívánt logika szerint
+  
     try {
-      if (event.participants.length < event.maxCapacity) {
-        await updateDoc(eventRef, {
-          participants: arrayUnion(currentUser.uid)
-        });
+      // Ha a regisztrációs határidő előtt van, és a felhasználó veterán
+      if (now < deadline && userRole === "Keddi foci veterán") {
+        // Ha az esemény megtelt
+        if (event.participants.length >= event.maxCapacity) {
+          // Keressük meg az első olyan résztvevőt, akinek a levelje "Új játékos"
+          const candidateUid = event.participants.find(uid => {
+            const userData = usersDataMap[uid];
+            return userData && userData.level === "Új játékos";
+          });
+          if (candidateUid) {
+            // Tranzakcióban távolítjuk el a candidateUid-t, hozzáadjuk a várólistához,
+            // majd a veteránt a résztvevők közé tesszük
+            await runTransaction(db, async (transaction) => {
+              const eventDoc = await transaction.get(eventRef);
+              if (!eventDoc.exists()) throw "Esemény nem található!";
+              const eventData = eventDoc.data();
+              const updatedParticipants = eventData.participants.filter(uid => uid !== candidateUid);
+              const updatedWaitlist = eventData.waitlist ? [...eventData.waitlist, candidateUid] : [candidateUid];
+              updatedParticipants.push(currentUser.uid);
+              transaction.update(eventRef, {
+                participants: updatedParticipants,
+                waitlist: updatedWaitlist
+              });
+            });
+            // (Esetleg itt növeld a veterán részvételi számát is, pl. increment(1))
+            return;
+          } else {
+            // Ha nem találunk "Új játékos" jelölőt, a veteránt a waitlistbe tesszük
+            await updateDoc(eventRef, {
+              waitlist: arrayUnion(currentUser.uid)
+            });
+            return;
+          }
+        } else {
+          // Ha nem telt meg az esemény, egyszerűen hozzáadjuk a veteránt a résztvevők közé
+          await updateDoc(eventRef, {
+            participants: arrayUnion(currentUser.uid)
+          });
+          return;
+        }
       } else {
-        await updateDoc(eventRef, {
-          waitlist: arrayUnion(currentUser.uid)
-        });
+        // Normál regisztráció
+        if (event.participants.length < event.maxCapacity) {
+          await updateDoc(eventRef, {
+            participants: arrayUnion(currentUser.uid)
+          });
+        } else {
+          await updateDoc(eventRef, {
+            waitlist: arrayUnion(currentUser.uid)
+          });
+        }
       }
     } catch (err) {
       console.error("Hiba a jelentkezés során:", err);
     }
   };
+  
 
   const cancelParticipation = async (event) => {
     if (!currentUser) return;

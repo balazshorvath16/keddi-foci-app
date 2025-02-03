@@ -41,6 +41,7 @@ function Dashboard() {
       <h2>Dashboard</h2>
       {user && <p>Üdvözlünk, {user.email}! ({userRole})</p>}
       <button onClick={() => navigate("/events")}>Események megtekintése</button>
+      <button onClick={() => navigate("/profile")}>Profil</button>
       {userRole === "admin" && (
         <button onClick={() => navigate("/create-event")}>
           Esemény létrehozása

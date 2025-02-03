@@ -31,15 +31,25 @@ function Navbar() {
 
 const styles = {
   navbar: {
-    backgroundColor: "#333",
-    padding: "10px"
+    backgroundColor: "rgba(0,0,0,0.5)",
+    padding: "10px",
+    borderRadius: "0px 0px 16px 16px",
+    position: "fixed",
+    top: 0,
+    width: "100%",
+    margin: "0px auto",
+    left : 0,
+    zIndex: "10"
+
+    
   },
   navList: {
     listStyle: "none",
     display: "flex",
     justifyContent: "space-around",
-    margin: 0,
+    margin: "0px auto",
     padding: 0,
+    maxWidth: "1280px"
   },
   navItem: {
     margin: "0 10px",

@@ -65,9 +65,9 @@ function CreateEvent() {
   }
 
   return (
-    <div>
+    <div className="main_container">
       <h2>Esemény Létrehozása</h2>
-      <form onSubmit={handleCreateEvent}>
+      <form onSubmit={handleCreateEvent} className="form_style">
         <input 
           type="text" 
           placeholder="Helyszín" 

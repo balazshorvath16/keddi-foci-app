@@ -113,7 +113,7 @@ function Events() {
   }
 
   return (
-    <div>
+    <div className="main_container">
       <h2>Események</h2>
       <button onClick={() => navigate("/dashboard")}>
         Vissza a Dashboardra

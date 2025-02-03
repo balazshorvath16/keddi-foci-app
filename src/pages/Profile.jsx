@@ -47,7 +47,7 @@ function Profile() {
   };
 
   return (
-    <div>
+    <div className="main_container">
       <h2>Profil módosítása</h2>
       <form onSubmit={handleUpdate}>
         <div>

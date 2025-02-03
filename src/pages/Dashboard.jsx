@@ -37,7 +37,7 @@ function Dashboard() {
   };
 
   return (
-    <div>
+    <div className="main_container"> 
       <h2>Dashboard</h2>
       {user && <p>Üdvözlünk, {user.email}! ({userRole})</p>}
       <button onClick={() => navigate("/events")}>Események megtekintése</button>

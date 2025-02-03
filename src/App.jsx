@@ -9,6 +9,7 @@ import CreateEvent from "./pages/CreateEvent";
 import Events from "./pages/Events";
 import Profile from "./pages/Profile";
 import Statistics from "./pages/Statistics";
+import './App.css';
 
 function App() {
   return (

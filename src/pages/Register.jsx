@@ -4,6 +4,7 @@ import { auth, db } from "../firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { setDoc, doc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function Register() {
   const [email, setEmail] = useState("");
@@ -40,9 +41,10 @@ function Register() {
   };
 
   return (
-    <div>
+    <div className="main_container">
+      <div className="main_form">
       <h2>Regisztráció</h2>
-      <form onSubmit={handleRegister}>
+      <form onSubmit={handleRegister} className="form_style">
         <input
           type="email"
           placeholder="Email cím"
@@ -85,7 +87,9 @@ function Register() {
         <br />
         <button type="submit">Regisztráció</button>
       </form>
+      <Link to="/login">Már van fiókom, bejelentkezek</Link>
       {error && <p style={{ color: "red" }}>{error}</p>}
+      </div>
     </div>
   );
 }

@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { auth } from "../firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -21,9 +22,10 @@ function Login() {
   };
 
   return (
-    <div>
+    <div className="main_container">
+      <div className="main_form">
       <h2>Bejelentkezés</h2>
-      <form onSubmit={handleLogin}>
+      <form onSubmit={handleLogin} className="form_style">
         <input
           type="email"
           placeholder="Email cím"
@@ -42,7 +44,9 @@ function Login() {
         <br />
         <button type="submit">Bejelentkezés</button>
       </form>
+      <Link to="/register">Még nincs fiókom, regisztrálok</Link>
       {error && <p style={{ color: "red" }}>{error}</p>}
+      </div>
     </div>
   );
 }

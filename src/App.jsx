@@ -1,5 +1,5 @@
 // src/App.jsx
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Register from "./pages/Register";
@@ -9,15 +9,31 @@ import CreateEvent from "./pages/CreateEvent";
 import Events from "./pages/Events";
 import Profile from "./pages/Profile";
 import Statistics from "./pages/Statistics";
-import './App.css';
-import "slick-carousel/slick/slick.css"; 
-import "slick-carousel/slick/slick-theme.css";
 import EditEvent from "./pages/EditEvent";
 import UserManagement from "./pages/UserManagement";
 import Layout from "./components/Layout";
+import './App.css';
+import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick-theme.css";
+import { requestForToken, onMessageListener } from './firebaseMessaging';
 
+const App = () => {
+  // Push értesítések kezelése
+  useEffect(() => {
+    const startPushNotifications = async () => {
+      // Push értesítési engedély kérése
+      await requestNotificationPermission();
+      // Üzenetek fogadása
+      onMessageListener().then((payload) => {
+        console.log('Message received. ', payload);
+        // Üzenet megjelenítése (pl. alert)
+        alert(payload.notification.title);
+      });
+    };
 
-function App() {
+    startPushNotifications();
+  }, []);
+
   return (
     <Router>
       <Routes>
@@ -36,6 +52,17 @@ function App() {
       </Routes>
     </Router>
   );
-}
+};
+
+// Engedély kérés
+const requestNotificationPermission = async () => {
+  const permission = await Notification.requestPermission();
+  if (permission === 'granted') {
+    console.log('Notification permission granted.');
+    await requestForToken();  // token lekérése
+  } else {
+    console.log('Notification permission denied.');
+  }
+};
 
 export default App;

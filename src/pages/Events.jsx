@@ -197,7 +197,7 @@ function Events() {
 
   if (loading) {
     return <div>
-      <img src="src/assets/img/VAR_System_Logo.svg" alt="" style={{ maxWidth: "120px", height: "auto" }}/>
+      <img src="https://firebasestorage.googleapis.com/v0/b/keddi-foci-app.firebasestorage.app/o/VAR_System_Logo.svg?alt=media&token=f0d6e4d4-38c4-48c7-8f5e-b71fad29f2d1" alt="" style={{ maxWidth: "120px", height: "auto" }}/>
       <h2>Egy pillanat, a VAR még vizsgálja az esetet...</h2>
       </div>;
   }

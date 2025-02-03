@@ -7,7 +7,7 @@ function Home() {
     <div className="main_container">
       <div className="home_flex_container">
         <div>
-          <img src="src/assets/img/keddi_foci_bg.jpg" alt="" />
+          <img src="https://firebasestorage.googleapis.com/v0/b/keddi-foci-app.firebasestorage.app/o/keddi_foci_bg.jpg?alt=media&token=5dd23b4a-c7fe-459a-905b-9d13f06e9213" alt="" />
         </div>
         <div>
           <h2>Gyerünk srácok,<br /> Andris már kint van a pályán! ⚽😎</h2>

@@ -10,6 +10,10 @@ import Events from "./pages/Events";
 import Profile from "./pages/Profile";
 import Statistics from "./pages/Statistics";
 import './App.css';
+import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick-theme.css";
+import EditEvent from "./pages/EditEvent";
+
 
 function App() {
   return (
@@ -23,6 +27,7 @@ function App() {
         <Route path="/events" element={<Events />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/statistics" element={<Statistics />} />
+        <Route path="/edit-event/:id" element={<EditEvent />} />
       </Routes>
     </Router>
   );

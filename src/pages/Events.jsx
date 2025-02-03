@@ -10,23 +10,34 @@ import {
   doc,
   arrayUnion,
   arrayRemove,
-  runTransaction
+  runTransaction,
+  getDoc
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick-theme.css";
 
 function Events() {
   const [events, setEvents] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
+  const [userRole, setUserRole] = useState("");
   const [loading, setLoading] = useState(true);
   const [usersMap, setUsersMap] = useState({});
   const [expandedEvents, setExpandedEvents] = useState({});
   const navigate = useNavigate();
 
+  // Bejelentkezett felhasználó és szerep lekérése
   useEffect(() => {
-    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+    const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setCurrentUser(user);
+        // Lekérjük a felhasználó dokumentumát a "users" kollekcióból a role mezővel
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          setUserRole(userDoc.data().role);
+        }
       } else {
         navigate("/");
       }
@@ -108,30 +119,68 @@ function Events() {
     }
   };
 
+  const settings = {
+    dots: true,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: { slidesToShow: 2 }
+      },
+      {
+        breakpoint: 600,
+        settings: { slidesToShow: 1 }
+      }
+    ]
+  };
+
   if (loading) {
     return <div>Töltés...</div>;
   }
 
   return (
-    <div className="main_container">
+    <div>
       <h2>Események</h2>
       <button onClick={() => navigate("/dashboard")}>
         Vissza a Dashboardra
       </button>
-      <ul>
+      <Slider {...settings}>
         {events.map((event) => {
           const isParticipant = event.participants.includes(currentUser?.uid);
           const isInWaitlist =
             event.waitlist && event.waitlist.includes(currentUser?.uid);
+          const cardClass = event.status === "elmarad" ? "event-card cancelled" : "event-card";
           return (
-            <li
+            <div
               key={event.id}
+              className={cardClass}
               style={{
+                padding: "10px",
+                margin: "5px",
                 border: "1px solid #ccc",
-                margin: "10px",
-                padding: "10px"
+                borderRadius: "8px",
+                position: "relative"
               }}
             >
+              {event.modified && (
+                <span
+                  style={{
+                    position: "absolute",
+                    top: "5px",
+                    right: "5px",
+                    background: "orange",
+                    color: "#fff",
+                    padding: "2px 5px",
+                    borderRadius: "3px",
+                    fontSize: "12px"
+                  }}
+                >
+                  Módosult
+                </span>
+              )}
               <p>
                 <strong>Helyszín:</strong> {event.location}
               </p>
@@ -148,14 +197,18 @@ function Events() {
                 <strong>Résztvevők száma:</strong> {event.participants.length}
               </p>
               {isParticipant || isInWaitlist ? (
-                <button onClick={() => cancelParticipation(event)}>
-                  Lemondom
-                </button>
+                <button onClick={() => cancelParticipation(event)}>Lemondom</button>
               ) : (
                 <button onClick={() => joinEvent(event)}>
                   {event.participants.length < event.maxCapacity
                     ? "Jelentkezem"
                     : "Jelentkezem várólistára"}
+                </button>
+              )}
+              {/* Ha a bejelentkezett felhasználó admin, megjelenik az esemény szerkesztése gomb */}
+              {userRole === "admin" && (
+                <button onClick={() => navigate(`/edit-event/${event.id}`)}>
+                  Esemény szerkesztése
                 </button>
               )}
               <button
@@ -173,7 +226,7 @@ function Events() {
               {expandedEvents[event.id] && (
                 <div>
                   <h4>Résztvevők:</h4>
-                  <ul>
+                  <ul className="resztvevok-list">
                     {event.participants.map((uid) => (
                       <li key={uid}>{usersMap[uid] || uid}</li>
                     ))}
@@ -181,7 +234,7 @@ function Events() {
                   {event.waitlist && event.waitlist.length > 0 && (
                     <>
                       <h4>Várólista:</h4>
-                      <ul>
+                      <ul className="resztvevok-list">
                         {event.waitlist.map((uid) => (
                           <li key={uid}>{usersMap[uid] || uid}</li>
                         ))}
@@ -190,10 +243,10 @@ function Events() {
                   )}
                 </div>
               )}
-            </li>
+            </div>
           );
         })}
-      </ul>
+      </Slider>
     </div>
   );
 }

@@ -117,9 +117,46 @@ button {
 .home_flex_container div img {
   max-width: 800px;
 }
-/* .home_flex_container div:first-of-type {
-  background: url(../src/assets/img/keddi_foci_bg.jpg);
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center center;
-} */
+.event-card {
+  background-color: #fff;
+  border-radius: 12px;
+  margin: 24px 8px;
+  box-shadow: 0px 0px 16px rgba(0, 0, 0, 0.3);
+  max-width: 320px;
+  padding: 24px;
+  position: relative;
+}
+.event-card.cancelled {
+  filter: grayscale(100%);
+  position: relative;
+  pointer-events: none !important;
+  background-color: #b0b0b0;
+}
+
+.event-card.cancelled::after {
+  content: "ELMARAD";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 0, 0, 0.7);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.slick-dots {
+ bottom: -80px;
+}
+.event-card button {
+  margin: 8px auto;
+}
+
+/* RESZTVEVOK LISTAZASA */
+.resztvevok-list {
+  list-style-type: decimal;
+  padding: 0px;
+  width: max-content;
+  margin: 0px auto;
+}

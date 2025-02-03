@@ -4,6 +4,7 @@ import { auth, db } from "../firebaseConfig";
 import { collection, addDoc, serverTimestamp, getDoc, doc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function CreateEvent() {
   const [location, setLocation] = useState("");
@@ -98,6 +99,9 @@ function CreateEvent() {
         />
         <button type="submit">Esemény létrehozása</button>
       </form>
+      <nav>
+          <Link to="/dashboard">Vissza</Link>
+      </nav>
       {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
   );

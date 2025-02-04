@@ -1,10 +1,9 @@
 // src/pages/Login.jsx
 import React, { useState } from "react";
 import { auth } from "../firebaseConfig";
-import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { setPersistence, browserLocalPersistence, browserSessionPersistence } from "firebase/auth";
+import { signInWithEmailAndPassword, setPersistence, browserLocalPersistence, browserSessionPersistence } from "firebase/auth";
 
 
 function Login() {
@@ -17,6 +16,7 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
+      // Állítsd be a persistence-t, hogy a felhasználó localStorage-ban maradjon bejelentkezve
       await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
       await signInWithEmailAndPassword(auth, email, password);
       navigate("/dashboard");

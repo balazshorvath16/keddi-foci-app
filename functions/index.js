@@ -1,67 +1,89 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * const {onCall} = require("firebase-functions/v2/https");
- * const {onDocumentWritten} = require("firebase-functions/v2/firestore");
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
+// functions/index.js
+const { onDocumentCreated } = require('firebase-functions/v2/firestore');
+const { logger } = require('firebase-functions');
+const admin = require('firebase-admin');
+const mailchimp = require('@mailchimp/mailchimp_marketing');
+admin.initializeApp();
 
-const {onRequest} = require("firebase-functions/v2/https");
-const logger = require("firebase-functions/logger");
+mailchimp.setConfig({
+  apiKey: '00b69c3e6b2d24f22f74695435ca31f4',
+  server: 'us12' // például 'us1'
+});
 
-// Create and deploy your first functions
-// https://firebase.google.com/docs/functions/get-started
-
-// exports.helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
-
-  // functions/index.js
-  const functions = require('firebase-functions');
-  const admin = require('firebase-admin');
-  admin.initializeApp();
-  
-  // Trigger, ha új esemény jön létre az "events" kollekcióban
-  exports.handleEventUpdateNotifications = functions.firestore
-    .document('events/{eventId}')
-    .onUpdate(async (change, context) => {
-      const beforeData = change.before.data();
-      const afterData = change.after.data();
-  
-      // 1. Esemény megtelt: Ha korábban a résztvevők száma kevesebb volt, most pedig elérte vagy meghaladta a maxCapacity-t
-      if (beforeData.participants.length < beforeData.maxCapacity &&
-          afterData.participants.length >= afterData.maxCapacity) {
-        const fullPayload = {
-          notification: {
-            title: 'Esemény betelt!',
-            body: 'Az esemény már betelt, a várólista folyamatban van.'
-          }
-        };
-  
-        try {
-          const response = await admin.messaging().sendToTopic('events', fullPayload);
-          console.log('Full event notification sent:', response);
-        } catch (error) {
-          console.error('Error sending full event notification:', error);
-        }
-      }
-      if (beforeData.waitlist && afterData.waitlist && 
-          beforeData.waitlist.length > afterData.waitlist.length) {
-        const promotedPayload = {
-          notification: {
-            title: 'Helyed felszabadult!',
-            body: 'Egy várólista tagja bekerült az eseménybe, most már részt vehetsz!'
-          }
-        };
-  
-        try {
-          const response = await admin.messaging().sendToTopic('events', promotedPayload);
-          console.log('Waitlist promotion notification sent:', response);
-        } catch (error) {
-          console.error('Error sending waitlist promotion notification:', error);
-        }
-      }
+// Segédfüggvény: E-mail küldése Mailchimp API-val
+async function sendMailchimpEmail(subject, message) {
+  try {
+    const campaignResponse = await mailchimp.campaigns.create({
+      type: 'regular',
+      recipients: { list_id: '967eb178c2' }, // Az email lista ID-ja
+      settings: {
+        subject_line: subject,
+        title: subject,
+        from_name: 'Keddi Foci App',
+        reply_to: 'balazs.horvath1313@gmail.com',
+      },
     });
-  
+
+    // Kampány tartalmának beállítása
+    await mailchimp.campaigns.setContent(campaignResponse.id, {
+      html: `<p>${message}</p>`,
+    });
+
+    // Kampány elküldése
+    const sendResponse = await mailchimp.campaigns.send(campaignResponse.id);
+    return sendResponse;
+  } catch (error) {
+    throw new Error('Mailchimp email send error: ' + error.message);
+  }
+}
+
+// Firestore trigger: Új esemény létrejötte (Esemény létrehozása)
+exports.sendEventCreatedEmail = onDocumentCreated('events/{eventId}', async (snap, context) => {
+  const eventData = snap.data();
+  const subject = 'Új esemény érkezett!';
+  const message = `Új focis esemény: ${eventData.location} - ${eventData.eventDate} ${eventData.eventTime}`;
+
+  try {
+    const response = await sendMailchimpEmail(subject, message);
+    logger.info('E-mail sikeresen elküldve:', response);
+  } catch (error) {
+    logger.error('Hiba az e-mail küldésénél:', error);
+  }
+});
+
+// Firestore trigger: Esemény betelt / Várólista promóció (Esemény betöltés és várólista kezelés)
+exports.sendEventUpdateNotifications = onDocumentCreated('events/{eventId}', async (snap, context) => {
+  const eventData = snap.data();
+
+  // Esemény betelt, értesítés küldése
+  if (eventData.participants.length >= eventData.maxCapacity) {
+    const fullPayload = {
+      notification: {
+        title: 'Esemény betelt!',
+        body: 'Az esemény már betelt, a várólista folyamatban van.',
+      },
+    };
+    try {
+      const response = await admin.messaging().sendToTopic('events', fullPayload);
+      logger.info('Full event notification sent:', response);
+    } catch (error) {
+      logger.error('Error sending full event notification:', error);
+    }
+  }
+
+  // Várólista promóció, értesítés küldése
+  if (eventData.waitlist && eventData.waitlist.length > 0) {
+    const promotedPayload = {
+      notification: {
+        title: 'Helyed felszabadult!',
+        body: 'Valaki visszamondta az eseményt, most már részt vehetsz rajta!',
+      },
+    };
+    try {
+      const response = await admin.messaging().sendToTopic('events', promotedPayload);
+      logger.info('Waitlist promotion notification sent:', response);
+    } catch (error) {
+      logger.error('Error sending waitlist promotion notification:', error);
+    }
+  }
+});

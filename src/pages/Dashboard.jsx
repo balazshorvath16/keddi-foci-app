@@ -50,7 +50,7 @@ function Dashboard() {
     <div className="main_container"> 
     <div>
       <h2>Kezdőlap</h2>
-      {user && <p>Üdvözlünk, {user.email}! ({userRole})</p>}
+      {user && <p>Üdvözlünk, {user.displayName || user.email}! ({userRole})</p>}
       {/* <button onClick={() => navigate("/events")}>Események megtekintése</button>
       <button onClick={() => navigate("/profile")}>Profil</button> */}
       {userRole === "admin" && (

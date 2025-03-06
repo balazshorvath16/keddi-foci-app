@@ -2,9 +2,11 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
+import { FaHome, FaCalendarAlt, FaUser, FaChartBar, FaSignOutAlt } from "react-icons/fa";
 import { auth } from "../firebaseConfig";
+import { Navbar, Nav, Container } from "react-bootstrap";
 
-function Navbar() {
+function CustomNavbar() {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -17,54 +19,65 @@ function Navbar() {
   };
 
   return (
-    <nav style={styles.navbar}>
-      <ul style={styles.navList}>
-        <li style={styles.navItem}><Link to="/dashboard" style={styles.link}>Dashboard</Link></li>
-        <li style={styles.navItem}><Link to="/events" style={styles.link}>Események</Link></li>
-        <li style={styles.navItem}><Link to="/profile" style={styles.link}>Profil</Link></li>
-        <li style={styles.navItem}><Link to="/statistics" style={styles.link}>Statisztikák</Link></li>
-        <li style={styles.navItem}><button onClick={handleLogout} style={styles.logoutButton}>Kijelentkezés</button></li>
-      </ul>
-    </nav>
+    <Navbar style={styles.navbar} bg="dark" variant="dark" expand="lg">
+      <Container style={styles.container}>
+        <Nav className="w-100 justify-content-around" style={styles.navList}>
+          <Nav.Link as={Link} to="/dashboard" style={styles.navLink}>
+            <FaHome style={styles.icon} />
+          </Nav.Link>
+          <Nav.Link as={Link} to="/events" style={styles.navLink}>
+            <FaCalendarAlt style={styles.icon} />
+          </Nav.Link>
+          <Nav.Link as={Link} to="/profile" style={styles.navLink}>
+            <FaUser style={styles.icon} />
+          </Nav.Link>
+          <Nav.Link as={Link} to="/statistics" style={styles.navLink}>
+            <FaChartBar style={styles.icon} />
+          </Nav.Link>
+          <Nav.Link onClick={handleLogout} style={styles.navLink}>
+            <FaSignOutAlt style={styles.icon} />
+          </Nav.Link>
+        </Nav>
+      </Container>
+    </Navbar>
   );
 }
 
 const styles = {
   navbar: {
     backgroundColor: "rgba(0,0,0,0.5)",
-    padding: "10px",
-    borderRadius: "0px 0px 16px 16px",
+    padding: "24px 24px",
+    borderRadius: "16px 16px 0 0",  // csak a felső sarkok lekerekítése
     position: "fixed",
-    top: 0,
-    width: "100%",
+    bottom: 0,
+    left: 0,
+    right: 0,
     margin: "0px auto",
-    left : 0,
-    zIndex: "10"
-
-    
+    maxWidth: 640,
+    zIndex: 10,
+  },
+  container: {
+    maxWidth: "1280px",
+    margin: "0 auto",
   },
   navList: {
-    listStyle: "none",
+    // A bootstrap "w-100" és "justify-content-around" osztályok gondoskodnak az elrendezésről
     display: "flex",
-    justifyContent: "space-around",
-    margin: "0px auto",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  navLink: {
     padding: 0,
-    maxWidth: "1280px"
+    margin: 0,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
-  navItem: {
-    margin: "0 10px",
-  },
-  link: {
+  icon: {
     color: "#fff",
-    textDecoration: "none",
-  },
-  logoutButton: {
-    backgroundColor: "#555",
-    color: "#fff",
-    border: "none",
-    padding: "5px 10px",
-    cursor: "pointer",
+    fontSize: "1.8rem",  // nagyobb ikon méret
   },
 };
 
-export default Navbar;
+export default CustomNavbar;

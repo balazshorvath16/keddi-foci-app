@@ -1,9 +1,10 @@
 // src/pages/Login.jsx
 import React, { useState } from "react";
-import { auth } from "../firebaseConfig";
+import { auth, db } from "../firebaseConfig";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { signInWithEmailAndPassword, setPersistence, browserLocalPersistence, browserSessionPersistence } from "firebase/auth";
+import { setDoc, doc } from "firebase/firestore";
+import { signInWithEmailAndPassword, setPersistence, browserLocalPersistence, browserSessionPersistence, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 
 function Login() {
@@ -24,6 +25,31 @@ function Login() {
       setError(err.message);
     }
   };
+
+    // Google bejelentkezés
+    const handleGoogleSignIn = async () => {
+      const provider = new GoogleAuthProvider();
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+  
+        // Ha a felhasználó dokumentum nem létezik, hozzuk létre
+        await setDoc(
+          doc(db, "users", user.uid),
+          {
+            email: user.email,
+            fullName: user.displayName,
+            profilePic: user.photoURL, // Google profilkép URL-je
+            role: "user",
+            // Egyéb mezők, pl. birthDate: "", participationCount: 0, stb.
+          },
+          { merge: true } // Merge-be állítjuk, ha már létezik a dokumentum
+        );
+        navigate("/dashboard");
+      } catch (error) {
+        setError(error.message);
+      }
+    };
 
   return (
     <div className="main_container">
@@ -56,6 +82,8 @@ function Login() {
         <button type="submit">Bejelentkezés</button>
       </form>
       <Link to="/register">Még nincs fiókom, regisztrálok</Link>
+      <hr />
+      <button onClick={handleGoogleSignIn}>Bejelentkezés Google fiókkal</button>
       {error && <p style={{ color: "red" }}>{error}</p>}
       </div>
     </div>

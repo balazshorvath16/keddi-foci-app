@@ -15,18 +15,14 @@ import Layout from "./components/Layout";
 import './App.css';
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
-import { requestForToken, onMessageListener } from './firebaseMessaging';
+// import { requestForToken, onMessageListener } from './firebaseMessaging';
 
 const App = () => {
-  // Push értesítések kezelése
   useEffect(() => {
     const startPushNotifications = async () => {
-      // Push értesítési engedély kérése
       await requestNotificationPermission();
-      // Üzenetek fogadása
       onMessageListener().then((payload) => {
         console.log('Message received. ', payload);
-        // Üzenet megjelenítése (pl. alert)
         alert(payload.notification.title);
       });
     };
@@ -59,7 +55,7 @@ const requestNotificationPermission = async () => {
   const permission = await Notification.requestPermission();
   if (permission === 'granted') {
     console.log('Notification permission granted.');
-    await requestForToken();  // token lekérése
+    await requestForToken();
   } else {
     console.log('Notification permission denied.');
   }

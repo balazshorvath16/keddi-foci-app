@@ -20,12 +20,8 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
 function computeRegistrationDeadline(event) {
-  // Feltételezzük, hogy event.eventDate egy "YYYY-MM-DD" formátumú string,
-  // és event.eventTime egy "HH:MM" formátumú string (24 órás formátum).
-  // Összeállítjuk az esemény kezdési dátum- és időpontját egy ISO formátumú string-gé:
   const eventDateTimeStr = `${event.eventDate}T${event.eventTime}:00`;
   const eventStart = new Date(eventDateTimeStr);
-  // 36 óra milliszekundumban: 36 * 60 * 60 * 1000 = 129600000
   const deadline = new Date(eventStart.getTime() - 129600000);
   return deadline;
 }
@@ -37,6 +33,7 @@ function Events() {
   const [usersMap, setUsersMap] = useState({});
   const [expandedEvents, setExpandedEvents] = useState({});
   const navigate = useNavigate();
+  const defaultProfilePic = '/assets/img/default-profile.png';
 
   // Bejelentkezett felhasználó és szerep lekérése
   useEffect(() => {
@@ -72,8 +69,7 @@ function Events() {
     const unsubscribeUsers = onSnapshot(collection(db, "users"), (snapshot) => {
       const usersObj = {};
       snapshot.docs.forEach((doc) => {
-        const data = doc.data();
-        usersObj[doc.id] = data.fullName;
+        usersObj[doc.id] = doc.data(); // Az egész dokumentumot tároljuk
       });
       setUsersMap(usersObj);
     });
@@ -205,14 +201,11 @@ function Events() {
   return (
     <div id="event_page" className="main_container">
       <h2>Események</h2>
-      <button onClick={() => navigate("/dashboard")}>
-        Vissza a Dashboardra
-      </button>
+      <button onClick={() => navigate("/dashboard")}>Vissza a Dashboardra</button>
       <Slider {...settings}>
         {events.map((event) => {
           const isParticipant = event.participants.includes(currentUser?.uid);
-          const isInWaitlist =
-            event.waitlist && event.waitlist.includes(currentUser?.uid);
+          const isInWaitlist = event.waitlist && event.waitlist.includes(currentUser?.uid);
           const cardClass = event.status === "elmarad" ? "event-card cancelled" : "event-card";
           return (
             <div
@@ -242,21 +235,11 @@ function Events() {
                   Módosult
                 </span>
               )}
-              <p>
-                <strong>Helyszín:</strong> {event.location}
-              </p>
-              <p>
-                <strong>Dátum:</strong> {event.eventDate}
-              </p>
-              <p>
-                <strong>Idő:</strong> {event.eventTime}
-              </p>
-              <p>
-                <strong>Max létszám:</strong> {event.maxCapacity}
-              </p>
-              <p>
-                <strong>Résztvevők száma:</strong> {event.participants.length}
-              </p>
+              <p><strong>Helyszín:</strong> {event.location}</p>
+              <p><strong>Dátum:</strong> {event.eventDate}</p>
+              <p><strong>Idő:</strong> {event.eventTime}</p>
+              <p><strong>Max létszám:</strong> {event.maxCapacity}</p>
+              <p><strong>Résztvevők száma:</strong> {event.participants.length}</p>
               {isParticipant || isInWaitlist ? (
                 <button onClick={() => cancelParticipation(event)}>Lemondom</button>
               ) : (
@@ -266,7 +249,6 @@ function Events() {
                     : "Jelentkezem várólistára"}
                 </button>
               )}
-              {/* Ha a bejelentkezett felhasználó admin, megjelenik az esemény szerkesztése gomb */}
               {userRole === "admin" && (
                 <button onClick={() => navigate(`/edit-event/${event.id}`)}>
                   Esemény szerkesztése
@@ -280,25 +262,52 @@ function Events() {
                   }))
                 }
               >
-                {expandedEvents[event.id]
-                  ? "Elrejt"
-                  : "Résztvevők megtekintése"}
+                {expandedEvents[event.id] ? "Elrejt" : "Résztvevők megtekintése"}
               </button>
               {expandedEvents[event.id] && (
                 <div>
                   <h4>Résztvevők:</h4>
                   <ul className="resztvevok-list">
-                    {event.participants.map((uid) => (
-                      <li key={uid}>{usersMap[uid] || uid}</li>
-                    ))}
+                    {event.participants.map((uid) => {
+                      const user = usersMap[uid] || {}; // Ha nincs, üres objektum
+                      const displayName = user.fullName ? user.fullName : uid;
+                      // Ellenőrizd, hogy a profilePic létezik és nem csak üres string
+                      const profilePicUrl = user.profilePic && user.profilePic.trim() !== ""
+                        ? user.profilePic
+                        : defaultProfilePic;
+                      return (
+                        <li key={uid} style={{ display: "flex", alignItems: "center", marginBottom: "5px" }}>
+                          <img 
+                            src={profilePicUrl} 
+                            alt={displayName} 
+                            style={{ width: "24px", height: "24px", borderRadius: "50%", marginRight: "5px" }} 
+                          />
+                          <span>{displayName}</span>
+                        </li>
+                      );
+                    })}
                   </ul>
                   {event.waitlist && event.waitlist.length > 0 && (
                     <>
                       <h4>Várólista:</h4>
                       <ul className="resztvevok-list">
-                        {event.waitlist.map((uid) => (
-                          <li key={uid}>{usersMap[uid] || uid}</li>
-                        ))}
+                        {event.waitlist.map((uid) => {
+                          const user = usersMap[uid] || {};
+                          const displayName = user.fullName ? user.fullName : uid;
+                          const profilePicUrl = user.profilePic && user.profilePic.trim() !== ""
+                            ? user.profilePic
+                            : defaultProfilePic;
+                          return (
+                            <li key={uid} style={{ display: "flex", alignItems: "center", marginBottom: "5px" }}>
+                              <img 
+                                src={profilePicUrl} 
+                                alt={displayName} 
+                                style={{ width: "24px", height: "24px", borderRadius: "50%", marginRight: "5px" }} 
+                              />
+                              <span>{displayName}</span>
+                            </li>
+                          );
+                        })}
                       </ul>
                     </>
                   )}

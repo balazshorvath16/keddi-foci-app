@@ -8,7 +8,7 @@ Ez a dokumentáció összefoglalja az elmúlt napokban végrehajtott módosítá
 ## Új Funkciók és Fejlesztések, bugfix
 
 - **Hibajelentési Rendszer:**  
-  Új hibajelentő űrlap került bevezetésre, amivel könnyedén bejelentheted, ha valami nem működik.
+  Új hibajelentő űrlap került bevezetésre, amivel könnyedén bejelentheted, ha valami nem működik. Lehetőség van kép csatolására is, amely jobban segíti a hiba kijavítását.
 
 - **Verziókövetés és hibajelentés:**  
   A főoldalon megjelenik egy extra rész, amely tartalmazza az alkalmazás verziószámát és az aktuális dátumot, így mindig naprakész információkat láthatsz. Itt lehet egyben leadni a hibajelentést is.

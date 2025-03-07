@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { auth, db } from "../firebaseConfig";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { setDoc, doc } from "firebase/firestore";
+import { setDoc, doc, getDoc } from "firebase/firestore";
 import { signInWithEmailAndPassword, setPersistence, browserLocalPersistence, browserSessionPersistence, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 
@@ -17,7 +17,6 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      // Állítsd be a persistence-t, hogy a felhasználó localStorage-ban maradjon bejelentkezve
       await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
       await signInWithEmailAndPassword(auth, email, password);
       navigate("/dashboard");
@@ -33,18 +32,27 @@ function Login() {
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
   
-        // Ha a felhasználó dokumentum nem létezik, hozzuk létre
-        await setDoc(
-          doc(db, "users", user.uid),
-          {
+        // Itt építsük be a Firestore frissítési logikát:
+        const userDocRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+        if (!userDoc.exists()) {
+          // Új felhasználó: teljes regisztráció
+          await setDoc(userDocRef, {
             email: user.email,
             fullName: user.displayName,
-            profilePic: user.photoURL, // Google profilkép URL-je
+            profilePic: user.photoURL,
             role: "user",
-            // Egyéb mezők, pl. birthDate: "", participationCount: 0, stb.
-          },
-          { merge: true } // Merge-be állítjuk, ha már létezik a dokumentum
-        );
+            // egyéb mezők, pl. birthDate, participationCount, stb.
+          });
+        } else {
+          // Már létezik: csak frissítjük a változó mezőket, de nem írjuk felül a role-t
+          await setDoc(userDocRef, {
+            email: user.email,
+            fullName: user.displayName,
+            profilePic: user.photoURL,
+          }, { merge: true });
+        }
+  
         navigate("/dashboard");
       } catch (error) {
         setError(error.message);
@@ -72,15 +80,20 @@ function Login() {
           required
         />
         <br />
+        <div style={{display: "flex", flexDirection: "row",alignItems: "center"}}>
+        
         <input
+        style={{width: "10%"}}
           type="checkbox"
           checked={remember}
           onChange={(e) => setRemember(e.target.checked)}
         />
-        <label>Maradjak bejelentkezve</label>
-        <br />
+        <label style={{textAlign: "left", width: "90%"}}>Maradjak bejelentkezve</label> 
+        </div>
+        
         <button type="submit">Bejelentkezés</button>
       </form>
+      <br />
       <Link to="/register">Még nincs fiókom, regisztrálok</Link>
       <hr />
       <button onClick={handleGoogleSignIn}>Bejelentkezés Google fiókkal</button>

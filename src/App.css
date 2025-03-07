@@ -56,7 +56,7 @@ body {
   width: 100%;
   max-width: 1182px !important; /* Teljes szélesség */
   padding: 0 24px; 
-  margin: 0px auto;
+  margin: 0px auto 150px;
   box-sizing: border-box;
 }
 
@@ -193,7 +193,14 @@ button {
   background-color: #ffffffb9;
 }
 
-
+input[type="date"] {
+  width: 100%;
+  background-color: unset;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
 
 @media (max-width: 768px){
 

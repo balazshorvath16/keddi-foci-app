@@ -6,6 +6,8 @@ import { setDoc, doc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import "react-datepicker/dist/react-datepicker.css";
+
 
 function Register() {
   const [email, setEmail] = useState("");
@@ -17,6 +19,7 @@ function Register() {
   const [file, setFile] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+
   
   const defaultProfilePic = "/assets/default-profile.png";
   const handleRegister = async (e) => {
@@ -51,10 +54,11 @@ function Register() {
     }
   };
   return (
-    <div>
+    <div className="main_container">
+      <div className="main_form">
       <h2>Regisztráció</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
-      <form onSubmit={handleRegister}>
+      <form onSubmit={handleRegister} className="form_style">
         <input
           type="email"
           placeholder="Email cím"
@@ -71,14 +75,19 @@ function Register() {
           required
         />
         <br />
+        <div style={{display: "flex", flexDirection: "row",alignItems: "center"}}>
+        <label style={{textAlign: "left", fontSize: 12, width: "40%"}} for="szul_date">Születési dátum:</label>
         <input
+        style={{width: "60%"}}
+          id="szul_date"
           type="date"
           placeholder="Születési dátum"
           value={birthDate}
           onChange={(e) => setBirthDate(e.target.value)}
           required
         />
-        <br />
+        </div>
+
         <input
           type="password"
           placeholder="Jelszó"
@@ -110,6 +119,8 @@ function Register() {
         )}
         <button type="submit">Regisztráció</button>
       </form>
+      <Link to="/login">Már van fiókom, belépek</Link>
+    </div>
     </div>
   );
 }

@@ -1,19 +1,18 @@
 // src/components/Layout.jsx
-import React from "react";
-import { Outlet } from "react-router-dom";
-import Navbar from "./Navbar";
-import "../App.css"; // Győződj meg róla, hogy ez az import szerepel!
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import Navbar from './Navbar';
 
-function Layout() {
+const Layout = () => {
   return (
     <div>
       <Navbar />
-      {/* Ha a Navbar fixed pozícióban van, akkor itt érdemes extra felső paddingot adni */}
-      <div className="wrapper" style={{ paddingTop: "70px" }}>
+      {/* Az Outlet biztosítja a nested route-ok renderelését */}
+      <div className="content">
         <Outlet />
       </div>
     </div>
   );
-}
+};
 
 export default Layout;

@@ -200,8 +200,7 @@ function Events() {
 
   return (
     <div id="event_page" className="main_container">
-      <h2>Események</h2>
-      <button onClick={() => navigate("/dashboard")}>Vissza a Dashboardra</button>
+      <h2 style={{fontSize: 40}}>Események</h2>
       <Slider {...settings}>
         {events.map((event) => {
           const isParticipant = event.participants.includes(currentUser?.uid);

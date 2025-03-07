@@ -71,7 +71,7 @@ function Profile() {
 
   return (
     <div>
-      <h2>Profil módosítása</h2>
+      <h2 style={{fontSize: 40}}>Profil módosítása</h2>
       {/* Profilkép megjelenítése: Ha nincs beállítva, a default kép jelenik meg */}
       <div>
       <img 

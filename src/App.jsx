@@ -15,6 +15,9 @@ import Layout from "./components/Layout";
 import './App.css';
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
+import BugReportForm from "./pages/BugReportForm"; // Új import
+import BugFooter from "./components/BugFooter"; // Új import
+import BugReports from "./pages/BugReports"; 
 // import { requestForToken, onMessageListener } from './firebaseMessaging';
 
 const App = () => {
@@ -44,6 +47,8 @@ const App = () => {
           <Route path="/statistics" element={<Statistics />} />
           <Route path="/edit-event/:id" element={<EditEvent />} />
           <Route path="/user-management" element={<UserManagement />} />
+          <Route path="/bug-report" element={<BugReportForm />} />
+          <Route path="/bug-reports" element={<BugReports />} />
         </Route>
       </Routes>
     </Router>

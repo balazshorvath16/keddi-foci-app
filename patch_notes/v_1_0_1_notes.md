@@ -1,7 +1,7 @@
 # v1.0.1
 # Keddi Foci App – Módosítások és Funkcionalitások Összefoglalója
 
-Ez a dokumentáció összefoglalja az elmúlt napokban végrehajtott módosításokat és új funkciókat, melyek a projektünk fejlesztését segítik. Az alábbiakban részletezzük az egyes területeket, beleértve az autentikációt, profilkezelést, hibajelentési rendszert, UI módosításokat és a Firebase konfigurációs beállításokat.
+Ez a dokumentáció összefoglalja az elmúlt napokban végrehajtott módosításokat és új funkciókat, melyek a projektünk fejlesztését segítik. Az alábbiakban részletezzük az egyes területeket, beleértve az autentikációt, profilkezelést, hibajelentési rendszert, UI módosításokat a konfigurációs beállításokat.
 
 ---
 
